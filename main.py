@@ -94,6 +94,7 @@ def main():
         """
 
         summary = summarize_with_hf(text)
+        
         email_body = f"""
          New Vulnerability Alert
 

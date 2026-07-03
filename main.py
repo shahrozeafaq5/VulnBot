@@ -32,6 +32,7 @@ def fetch_cisa_kev():
 
 
 def summarize_with_hf(text):
+    
     headers = {
         "Authorization": f"Bearer {HF_TOKEN}",
         "Content-Type": "application/json"
@@ -49,7 +50,8 @@ def summarize_with_hf(text):
     res = requests.post(HF_API_URL, headers=headers, json=payload, timeout=60)
 
     if res.status_code != 200:
-        return "Summary unavailable. Hugging Face API error."
+    print("HF ERROR:", res.status_code, res.text)
+    return "Summary unavailable. Hugging Face API error."
 
     data = res.json()
     return data[0]["summary_text"]

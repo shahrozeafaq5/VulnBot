@@ -23,8 +23,8 @@ jobs:
 
       - name: Run VulnBot
         env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           TO_EMAIL: ${{ secrets.TO_EMAIL }}
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python main.py

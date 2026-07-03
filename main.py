@@ -1,9 +1,8 @@
 import os
 import json
-from email_utils import send_email
 import requests
 from dotenv import load_dotenv
-from ollama_client import analyze_vulnerability
+from email_utils import send_email
 load_dotenv()
 
 HF_TOKEN = os.getenv("HF_TOKEN")
@@ -57,6 +56,10 @@ def summarize_with_hf(text):
 
 
 def main():
+    send_email(
+        subject="✅ VulnBot Test",
+        body="GitHub Actions ran successfully and Gmail is working."
+    )
     seen = load_seen()
     vulnerabilities = fetch_cisa_kev()
 
@@ -94,7 +97,7 @@ def main():
         """
 
         summary = summarize_with_hf(text)
-        
+
         email_body = f"""
          New Vulnerability Alert
 

@@ -1,5 +1,6 @@
 import os
 import json
+from email_utils import send_email
 import requests
 from dotenv import load_dotenv
 from ollama_client import analyze_vulnerability
@@ -93,7 +94,26 @@ def main():
         """
 
         summary = summarize_with_hf(text)
+        email_body = f"""
+         New Vulnerability Alert
 
+        CVE: {cve_id}
+        Vendor/Product: {vendor} {product}
+        Issue: {name}
+
+        AI Summary:
+        {summary}
+
+        Required Action:
+        {action}
+
+        Due Date:
+        {due_date}
+            """
+
+        send_email(
+        subject=f"🚨 VulnBot Alert: {cve_id}",
+        body=email_body)
         print("=" * 60)
         print(f"CVE: {cve_id}")
         print(f"Vendor/Product: {vendor} {product}")

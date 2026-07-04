@@ -18,7 +18,5 @@ def send_email(subject, body):
     msg.set_content(body)
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        print("GMAIL_USER:", GMAIL_USER)
-        print("APP PASSWORD LENGTH:", len(GMAIL_APP_PASSWORD or ""))
         smtp.login(GMAIL_USER, GMAIL_APP_PASSWORD)
         smtp.send_message(msg)

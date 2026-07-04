@@ -4,6 +4,7 @@ import requests
 from datetime import date, timedelta
 from dotenv import load_dotenv
 from email_utils import send_email
+from nvd_client import fetch_recent_nvd
 
 load_dotenv()
 
@@ -72,11 +73,18 @@ def is_recent_vulnerability(vuln):
 
 def main():
     seen = load_seen()
-    vulnerabilities = fetch_cisa_kev()
+    cisa_vulns = fetch_cisa_kev()
+    nvd_vulns = fetch_recent_nvd(days=2)
+
+    vulnerabilities = cisa_vulns + nvd_vulns
 
     new_items = []
 
     for vuln in vulnerabilities:
+
+        source = vuln.get("source", "CISA KEV")
+        severity = vuln.get("severity", "Known Exploited")
+        cvss_score = vuln.get("cvssScore", "N/A")
         cve_id = vuln.get("cveID")
 
         if is_recent_vulnerability(vuln) and cve_id not in seen:
@@ -91,6 +99,9 @@ def main():
     email_sections = []
 
     for vuln in new_items[:5]:
+        Source: {source}
+        Severity: {severity}
+        CVSS_Score: {cvss_score}
         cve_id = vuln.get("cveID")
         vendor = vuln.get("vendorProject")
         product = vuln.get("product")

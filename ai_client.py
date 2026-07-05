@@ -1,5 +1,5 @@
 import requests
-from config import HF_TOKEN, HF_API_URL
+from config import HF_TOKEN, HF_API_URL, HF_MODEL
 
 
 def analyze_vulnerability(vuln_text):
@@ -8,31 +8,37 @@ def analyze_vulnerability(vuln_text):
         "Content-Type": "application/json"
     }
 
-    prompt = f"""
-You are a cybersecurity analyst.
+    messages = [
+        {
+            "role": "system",
+            "content": "You are a senior cybersecurity analyst. Give clear, practical vulnerability analysis."
+        },
+        {
+            "role": "user",
+            "content": f"""
+Analyze this vulnerability.
 
-Analyze this vulnerability and write a short security report.
-
-Include:
+Return exactly these sections:
 1. What happened
 2. Who is affected
 3. Why it matters
-4. Risk level
-5. Recommended action
+4. Risk level: Low/Medium/High/Critical
+5. Should I care?
+6. Recommended action
 
-Keep it simple and under 180 words.
+Keep it under 180 words.
 
 Vulnerability details:
 {vuln_text}
 """
+        }
+    ]
 
     payload = {
-        "inputs": prompt,
-        "parameters": {
-            "max_length": 180,
-            "min_length": 40,
-            "do_sample": False
-        }
+        "model": HF_MODEL,
+        "messages": messages,
+        "max_tokens": 220,
+        "temperature": 0.2
     }
 
     res = requests.post(HF_API_URL, headers=headers, json=payload, timeout=60)
@@ -42,4 +48,4 @@ Vulnerability details:
         return "AI analysis unavailable. Hugging Face API error."
 
     data = res.json()
-    return data[0]["summary_text"]
+    return data["choices"][0]["message"]["content"]

@@ -6,6 +6,7 @@ from storage import load_seen, save_seen
 from ai_client import analyze_vulnerability
 from report_builder import build_vuln_text, build_email_section, build_email_report
 from email_utils import send_email
+from profile_loader import load_profile
 
 
 def is_recent_vulnerability(vuln):
@@ -20,6 +21,7 @@ def is_recent_vulnerability(vuln):
 
 def main():
     seen = load_seen()
+    user_profile = load_profile()
 
     cisa_vulns = fetch_cisa_kev()
     nvd_vulns = fetch_recent_nvd(days=2)
@@ -49,7 +51,7 @@ def main():
 
     for vuln in new_items[:5]:
         vuln_text = build_vuln_text(vuln)
-        analysis = analyze_vulnerability(vuln_text)
+        analysis = analyze_vulnerability(vuln_text,user_profile)
 
         section = build_email_section(vuln, analysis)
         email_sections.append(section)

@@ -1,0 +1,8 @@
+{
+  "operating_systems": ["Windows 11", "Kali Linux"],
+  "languages": ["Python", "JavaScript", "C#"],
+  "frameworks": ["FastAPI", "React", "Next.js", "Unity"],
+  "tools": ["Docker", "GitHub Actions", "Ollama", "MongoDB"],
+  "vendors": ["Microsoft", "Cisco", "Google", "GitHub"],
+  "security_interests": ["web apps", "APIs", "cloud", "AI agents"]
+}

@@ -23,6 +23,7 @@ def fetch_recent_nvd(days=2):
     for item in data.get("vulnerabilities", []):
         cve = item.get("cve", {})
         cve_id = cve.get("id")
+        
 
         descriptions = cve.get("descriptions", [])
         description = ""
@@ -63,3 +64,50 @@ def fetch_recent_nvd(days=2):
         })
 
     return results
+
+def fetch_nvd_by_cve(cve_id):
+    params = {
+        "cveId": cve_id
+    }
+
+    res = requests.get(NVD_API_URL, params=params, timeout=30)
+    res.raise_for_status()
+
+    data = res.json()
+    vulnerabilities = data.get("vulnerabilities", [])
+
+    if not vulnerabilities:
+        return {
+            "severity": "Unknown",
+            "cvssScore": "N/A"
+        }
+
+    cve = vulnerabilities[0].get("cve", {})
+    metrics = cve.get("metrics", {})
+
+    if "cvssMetricV31" in metrics:
+        cvss_data = metrics["cvssMetricV31"][0]["cvssData"]
+        return {
+            "severity": cvss_data.get("baseSeverity", "Unknown"),
+            "cvssScore": cvss_data.get("baseScore", "N/A")
+        }
+
+    if "cvssMetricV30" in metrics:
+        cvss_data = metrics["cvssMetricV30"][0]["cvssData"]
+        return {
+            "severity": cvss_data.get("baseSeverity", "Unknown"),
+            "cvssScore": cvss_data.get("baseScore", "N/A")
+        }
+
+    if "cvssMetricV2" in metrics:
+        metric = metrics["cvssMetricV2"][0]
+        cvss_data = metric.get("cvssData", {})
+        return {
+            "severity": metric.get("baseSeverity", "Unknown"),
+            "cvssScore": cvss_data.get("baseScore", "N/A")
+        }
+
+    return {
+        "severity": "Unknown",
+        "cvssScore": "N/A"
+    }

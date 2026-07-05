@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from config import TEST_MODE
 from cisa_client import fetch_cisa_kev
-from nvd_client import fetch_recent_nvd
+from nvd_client import fetch_recent_nvd, fetch_nvd_by_cve
 from storage import load_seen, save_seen
 from ai_client import analyze_vulnerability
 from report_builder import build_vuln_text, build_html_email_report
@@ -51,6 +51,10 @@ def main():
     report_items = []
 
     for vuln in new_items[:5]:
+        if vuln.get("source") == "CISA KEV":
+            nvd_data = fetch_nvd_by_cve(vuln.get("cveID"))
+            vuln["severity"] = nvd_data["severity"]
+            vuln["cvssScore"] = nvd_data["cvssScore"]
         vuln_text = build_vuln_text(vuln)
 
         analysis = analyze_vulnerability(

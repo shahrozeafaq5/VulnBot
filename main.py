@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-
+from config import TEST_MODE
 from cisa_client import fetch_cisa_kev
 from nvd_client import fetch_recent_nvd
 from storage import load_seen, save_seen
@@ -31,7 +31,12 @@ def main():
     for vuln in vulnerabilities:
         cve_id = vuln.get("cveID")
 
-        if cve_id and is_recent_vulnerability(vuln) and cve_id not in seen:
+        if not cve_id:
+            continue
+
+        if TEST_MODE:
+            new_items.append(vuln)
+        elif is_recent_vulnerability(vuln) and cve_id not in seen:
             new_items.append(vuln)
 
     if not new_items:

@@ -1,10 +1,11 @@
 from datetime import date, timedelta
+
 from config import TEST_MODE
 from cisa_client import fetch_cisa_kev
 from nvd_client import fetch_recent_nvd
 from storage import load_seen, save_seen
 from ai_client import analyze_vulnerability
-from report_builder import build_vuln_text, build_email_section, build_email_report
+from report_builder import build_vuln_text, build_html_email_report
 from email_utils import send_email
 from profile_loader import load_profile
 
@@ -47,25 +48,36 @@ def main():
 
     print(f"Found {len(new_items)} new recent vulnerabilities.")
 
-    email_sections = []
+    report_items = []
 
     for vuln in new_items[:5]:
         vuln_text = build_vuln_text(vuln)
-        analysis = analyze_vulnerability(vuln_text,user_profile)
 
-        section = build_email_section(vuln, analysis)
-        email_sections.append(section)
+        analysis = analyze_vulnerability(
+            vuln_text=vuln_text,
+            user_profile=user_profile
+        )
+
+        report_items.append({
+            "vuln": vuln,
+            "analysis": analysis
+        })
 
         seen.add(vuln.get("cveID"))
 
         print("=" * 60)
-        print(section)
+        print(f"Processed: {vuln.get('cveID')}")
+        print(analysis)
 
-    final_report = build_email_report(email_sections, len(new_items))
+    final_report = build_html_email_report(
+        items=report_items,
+        total_count=len(new_items)
+    )
 
     send_email(
         subject=f"🚨 VulnBot AI Report: {min(5, len(new_items))} Recent Vulnerabilities",
-        body=final_report
+        body=final_report,
+        html=True
     )
 
     save_seen(seen)

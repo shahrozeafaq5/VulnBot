@@ -12,5 +12,6 @@ SEEN_FILE = "seen_cves.json"
 
 CISA_KEV_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 HF_API_URL = "https://router.huggingface.co/v1/chat/completions"
-HF_MODEL = "omasteam/cyberguard-ai-security-analyzer"
+HF_MODEL = "google/gemma-4-31B-it"
+
 TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"

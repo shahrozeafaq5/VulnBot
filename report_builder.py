@@ -11,6 +11,7 @@ Notes: {vuln.get("notes")}
 Required Action: {vuln.get("requiredAction")}
 Due Date: {vuln.get("dueDate")}
 Date Added: {vuln.get("dateAdded")}
+
 """
 
 
@@ -57,10 +58,12 @@ def build_html_email_report(items, total_count):
 
         rows += f"""
         <div style="border:1px solid #ddd; border-radius:10px; padding:16px; margin-bottom:18px;">
+        
             <h2>{vuln.get("cveID")}</h2>
             <p><b>Source:</b> {vuln.get("source")}</p>
             <p><b>Vendor/Product:</b> {vuln.get("vendorProject")} {vuln.get("product")}</p>
             <p><b>Issue:</b> {vuln.get("vulnerabilityName")}</p>
+            <p><b>Priority Score:</b> {item.get("priority_score")}/100</p>
             <p><b>CVSS:</b> {vuln.get("cvssScore")}</p>
 
             <hr>
